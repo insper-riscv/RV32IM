@@ -236,4 +236,8 @@ cython_debug/
 
 .strace
 output_files/*
-!output_files/*.sof
+!output_files/*.softests/FPGA/core/quartus/simulation/
+tests/FPGA/core/quartus/db/
+tests/FPGA/core/quartus/incremental_db/
+tests/FPGA/core/quartus/output_files/
+tests/FPGA/core/build/

@@ -84,7 +84,8 @@ architecture rtl of rv32im_pipeline_core is
   -- Stall do muldiv (combinacional = sempre '0' nesta implementacao)
   -- =========================================================================
   signal muldiv_busy   : std_logic;
-  signal muldiv_stall  : std_logic;  -- == muldiv_busy (Booth eager: sobe no mesmo ciclo que start)
+  signal muldiv_done   : std_logic;
+  signal muldiv_stall  : std_logic;  -- busy OR done (cobre ciclo em que saida_capt atualiza)
 
   -- =========================================================================
   -- Estagio IF: pc_fetch
@@ -267,10 +268,11 @@ begin
 
   startMul_raw <= cu_isMulDiv and (not isMulDiv_d);
 
-  -- Com o Booth "eager busy" (busy sobe combinacionalmente quando start=1 em S_IDLE),
-  -- o muldiv_stall e simplesmente muldiv_busy. Nao precisa de ex_startMul nem
-  -- ex_isMulDiv, evitando loops de feedback e deadlocks.
-  muldiv_stall <= muldiv_busy;
+  -- BUG TIMING (resolvido): saida_capt no multdiv eh atualizado na borda quando done_int=1.
+  -- No ciclo em que done_int=1, busy ja caiu para 0 (Booth foi para S_DONE no ciclo anterior).
+  -- Sem este OR done, reg_EX_MEM capturaria saida_capt VELHO nesse ciclo.
+  -- Com "OR done", o stall continua por 1 ciclo extra ate saida_capt propagar.
+  muldiv_stall <= muldiv_busy or muldiv_done;
 
   idex_in_valid <= ifid_valid and (not id_bubble_sel);
 
@@ -528,7 +530,7 @@ begin
       rst    => reset,
       start  => ex_startMul,
       busy   => muldiv_busy,
-      done   => open
+      done   => muldiv_done
     );
 
   -- =========================================================================

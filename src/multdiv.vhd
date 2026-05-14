@@ -85,9 +85,19 @@ begin
   isUnsigned <= '1' when (opCode = "101" or opCode = "111") else '0';
 
   -- Decodifica opCode TRAVADO (para done_int e saida_capt - estavel durante calculo)
+  -- CORRETO: usa o decoderM para mapear op_latched -> operacao
+  -- (op_latched(1:0) NAO bate com operacao do decoderM para DIVU/REM/REMU)
   isMult_lat     <= '1' when op_latched(2) = '0' else '0';
   isUnsigned_lat <= '1' when (op_latched = "101" or op_latched = "111") else '0';
-  operacao_lat   <= op_latched(1 downto 0);
+  -- operacao do decoderM:
+  --   funct3=000/001/010/011 (MUL*)  -> operacao = "10"
+  --   funct3=100 (DIV)               -> operacao = "00"
+  --   funct3=101 (DIVU)              -> operacao = "00"
+  --   funct3=110 (REM)               -> operacao = "01"
+  --   funct3=111 (REMU)              -> operacao = "01"
+  operacao_lat   <= "10" when op_latched(2) = '0' else
+                    "00" when (op_latched = "100" or op_latched = "101") else
+                    "01";  -- REM/REMU (110/111)
 
   -- Trava o opCode no inicio da operacao
   process(clk, rst)
@@ -101,14 +111,14 @@ begin
     end if;
   end process;
 
-  -- busy e done usam op_latched (estavel durante o calculo)
-  busy <= mult_busy when isMult_lat = '1' else
-          divu_busy when isUnsigned_lat = '1' else
-          div_busy;
+  -- BUSY: OR de todas as unidades. Independe de op_latched (que tem 1 ciclo de atraso).
+  -- Importante: no primeiro ciclo da operacao, op_latched ainda eh da operacao anterior,
+  -- entao usar mux baseado em op_latched daria busy errado.
+  busy <= mult_busy or div_busy or divu_busy;
 
-  done_int <= mult_done when isMult_lat = '1' else
-              divu_done when isUnsigned_lat = '1' else
-              div_done;
+  -- DONE: tambem OR. So uma unidade vai estar ativa por vez (rota via 'start').
+  -- O multdiv ja garante isso atraves de 'start and isMult' / 'start and (not isMult) and ...'
+  done_int <= mult_done or div_done or divu_done;
 
   done <= done_int;
 

@@ -88,7 +88,8 @@ begin
                         if start = '0' then
                             start_inhibit <= '0';
                         end if;
-                        if start = '1' then
+                        -- Only start new operation if inhibit is clear
+                        if start = '1' and start_inhibit = '0' then
                             -- Initialize registers
                             A        <= (others => '0');
                             Q        <= signed(multiplier);

@@ -134,7 +134,12 @@ begin
                     -----------------------------------------------------------
                     when S_IDLE =>
                         done <= '0';
-                        if start = '1' then
+                        -- Clear inhibit when start falls
+                        if start = '0' then
+                            start_inhibit <= '0';
+                        end if;
+                        -- Only start new operation if inhibit is clear
+                        if start = '1' and start_inhibit = '0' then
                             -- Latch mode
                             op_unsigned <= is_unsigned;
 
