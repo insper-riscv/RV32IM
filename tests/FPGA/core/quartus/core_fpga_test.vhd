@@ -6,6 +6,7 @@ use work.rv32i_ctrl_consts.all;
 entity core_fpga_test is
 	port (
 		CLOCK_50 : in std_logic;
+		FPGA_RESET_N : in std_logic := '1';
 		LEDR : out std_logic_vector(9 downto 0) := (others => '0')
   	);
 end entity;
@@ -29,7 +30,10 @@ architecture behaviour of core_fpga_test is
 	signal pll_clk_wb     : std_logic;
 	signal pll_locked     : std_logic;
 
-	-- Mantém core em reset até o PLL estar travado
+	-- Mantém core em reset até o PLL estar travado, ou enquanto o
+	-- botão físico de reset (FPGA_RESET_N, ativo em nível baixo) for
+	-- pressionado o que permite reiniciar o core sem reconfigurar a FPGA
+	-- (ex: depois de carregar um novo conteúdo de ROM via JTAG).
 	signal core_reset : std_logic;
 
 begin
@@ -44,7 +48,7 @@ begin
       locked   => pll_locked
     );
 
-	core_reset <= not pll_locked;
+	core_reset <= (not pll_locked) or (not FPGA_RESET_N);
 
 	CORE : entity work.rv32im_pipeline_core
 		port map (
