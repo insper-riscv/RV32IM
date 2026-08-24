@@ -5,7 +5,19 @@ use work.rv32i_ctrl_consts.all;
 
 entity rv32i3stage_core_sim_test is
 	generic (
-	  ROM_FILE : string := "default.hex" 
+	  ROM_FILE : string := "default.hex";
+	  -- Word-address width of ROM_simulation/RAM_simulation's internal
+	  -- memory array (depth = 2**width words) — both default to 9 (512
+	  -- words) inside ROM_simulation/RAM_simulation themselves, too
+	  -- small for a program/mailbox address sized for the real
+	  -- ROM1PORT/RAM1PORT hardware (8192/4096 words). Exposed here so a
+	  -- full-pipeline testbench can size these to match whatever
+	  -- memory map its own C tests were compiled against, without
+	  -- editing this file. Left at the same 9/9 default so existing
+	  -- callers (e.g. tests/python/tests.json's instruction-level
+	  -- tests) are unaffected.
+	  rom_addr_width : natural := 9;
+	  ram_addr_width : natural := 9
   	);
 	port (
     	CLK  : in  std_logic;
@@ -74,7 +86,7 @@ begin
 	);
 
 	ROM : entity work.ROM_simulation
-		generic map (ROM_FILE => ROM_FILE)  
+		generic map (ROM_FILE => ROM_FILE, memoryAddrWidth => rom_addr_width)
 		port map (
 			addr 	=> rom_addr(31 downto 2),--word addressable
 			clk 	=> pll_clk_if,
@@ -83,6 +95,7 @@ begin
 	);
 
 	RAM : entity work.RAM_simulation
+		generic map (memoryAddrWidth => ram_addr_width)
 		port map(
 			addr 		=> ram_addr(31 downto 2), -- word addressable
 			mask 		=> ram_byteena,

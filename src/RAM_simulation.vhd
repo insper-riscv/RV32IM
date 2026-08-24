@@ -30,7 +30,12 @@ architecture rtl of RAM_simulation is
   signal data_out_reg : std_logic_vector(31 downto 0) := (others => '0'); -- registro de saída
 
 begin
-  widx <= addr(8 downto 0);
+  -- Was hardcoded to addr(8 downto 0) regardless of memoryAddrWidth
+  -- (ROM_simulation's equivalent slice already used the generic
+  -- correctly) — meant any word beyond the fixed 512-word range
+  -- silently aliased to (real_word_index mod 512) instead of being
+  -- reachable, no matter how large memoryAddrWidth/mem itself was set.
+  widx <= addr(memoryAddrWidth - 1 downto 0);
 
   process(clk)
   begin
