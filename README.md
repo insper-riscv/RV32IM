@@ -184,7 +184,7 @@ make test TEST=MUL
 Waveforms (`.ghw`) can be opened with **GTKWave**:
 
 ```bash
-gtkwave tests/python/sim_build/<toplevel>/waves.ghw
+gtkwave Tests/tests/python/sim_build/<toplevel>/waves.ghw
 ```
 
 ---
