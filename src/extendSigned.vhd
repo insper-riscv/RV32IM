@@ -33,12 +33,19 @@ begin
   -- unsigned = controle <= '00'
   -- signed e unsigned <= '10'
   
+  -- Ultimo ramo de cada atribuicao SEM condicao (nao "when controle =
+  -- ...") de proposito: controle so' tem 3 valores usados de verdade
+  -- (11/10/00), mas e' um vetor de 2 bits (4 combinacoes) -- sem um
+  -- else incondicional pro "01" nao-usado, o sintetizador nao consegue
+  -- provar cobertura total e infere uma latch pra saidaA/saidaB
+  -- inteiras (33 bits cada). Cai no mesmo valor que "00" ja' dava,
+  -- comportamento identico pros casos reais.
   saidaA <= entradaA(31) & entradaA when controle = "11" else
             entradaA(31) & entradaA when controle = "10" else
-            '0' & entradaA when controle = "00";
-				
+            '0' & entradaA;
+
   saidaB <= entradaB(31) & entradaB when controle = "11" else
             '0' & entradaB when controle = "10" else
-            '0' & entradaB when controle = "00";
+            '0' & entradaB;
 
 end architecture;
