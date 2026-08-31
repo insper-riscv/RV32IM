@@ -328,6 +328,31 @@ set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SW[9]
 
 #set_instance_assignment -name CURRENT_STRENGTH_NEW "MINIMUM CURRENT" -to VGA_*
 
+#============================================================
+# SPI_FLASH (reservado, GPIO_0 header/JP1 — chip de flash SPI
+# externo pro path de firmware update; ver conversa/arquitetura
+# de boot ROM + flash. Comentado até o periférico SPI existir
+# em VHDL e expor esses sinais no top-level (mesmo padrão da
+# seção VGA acima) — descomentar quando SPI_FLASH_CS/SCK/MOSI/
+# MISO forem portas reais de core_fpga_test.vhd.
+#
+# GPIO_0_D2 (pino físico 3)  = PIN_M16 -> SPI_FLASH_CS
+# GPIO_0_D3 (pino físico 4)  = PIN_C16 -> SPI_FLASH_SCK
+# GPIO_0_D4 (pino físico 5)  = PIN_D17 -> SPI_FLASH_MOSI
+# GPIO_0_D6 (pino físico 7)  = PIN_K21 -> SPI_FLASH_MISO
+# Alimentação: pino físico 29 = VCC3P3, pino físico 30 = GND
+# (não usar o pino 11/VCC5 a menos que a flash tenha regulador
+# próprio de 5V->3.3V).
+#============================================================
+#set_location_assignment PIN_M16 -to SPI_FLASH_CS
+#set_location_assignment PIN_C16 -to SPI_FLASH_SCK
+#set_location_assignment PIN_D17 -to SPI_FLASH_MOSI
+#set_location_assignment PIN_K21 -to SPI_FLASH_MISO
+#set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SPI_FLASH_CS
+#set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SPI_FLASH_SCK
+#set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SPI_FLASH_MOSI
+#set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SPI_FLASH_MISO
+
 #====================================================================
 # Fim da configuração dos pinos utilizados em Design de Computadores.
 #====================================================================
