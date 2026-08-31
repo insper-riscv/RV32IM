@@ -1,3 +1,3 @@
 [submodule "Tests"]
 	path = Tests
-	url = https://github.com/insper-riscv/RISC-V-Workstation-Tests.git
+	url = https://github.com/insper-riscv/Testes.git
