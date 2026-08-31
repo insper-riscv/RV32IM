@@ -14,7 +14,15 @@
       addr : in  std_logic_vector (addrWidth-1 downto 0);
       clk  : in  std_logic;
       re   : in  std_logic;
-      data : out std_logic_vector (dataWidth-1 downto 0)
+      data : out std_logic_vector (dataWidth-1 downto 0);
+
+      -- Harvard modificado: segunda porta de leitura, mesmo array
+      -- memROM, dominio de clock proprio -- paridade com rom2port.vhd
+      -- (hardware real), usada pelo estagio MEM do core.
+      addr2 : in  std_logic_vector (addrWidth-1 downto 0) := (others => '0');
+      clk2  : in  std_logic := '0';
+      re2   : in  std_logic := '0';
+      data2 : out std_logic_vector (dataWidth-1 downto 0)
     );
   end entity;
 
@@ -25,6 +33,9 @@
     signal memROM : blocoMemoria := (others => (others => '0'));
     signal localAddress : std_logic_vector(memoryAddrWidth-1 downto 0) := (others => '0');
     signal data_reg : std_logic_vector(dataWidth-1 downto 0) := (others => '0');
+
+    signal localAddress2 : std_logic_vector(memoryAddrWidth-1 downto 0) := (others => '0');
+    signal data_reg2 : std_logic_vector(dataWidth-1 downto 0) := (others => '0');
 
     -- Converte um caractere hex num nibble
     function hex_char_to_nibble(c : character) return std_logic_vector is
@@ -91,6 +102,7 @@
     end process;
 
     localAddress <= addr(memoryAddrWidth-1 downto 0);
+    localAddress2 <= addr2(memoryAddrWidth-1 downto 0);
 
     sync_read: process(clk)
     begin
@@ -101,6 +113,16 @@
       end if;
     end process;
 
+    sync_read2: process(clk2)
+    begin
+      if rising_edge(clk2) then
+        if re2 = '1' then
+          data_reg2 <= memROM(to_integer(unsigned(localAddress2)));
+        end if;
+      end if;
+    end process;
+
     data <= data_reg;
+    data2 <= data_reg2;
 
   end architecture;
