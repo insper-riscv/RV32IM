@@ -43,10 +43,16 @@ entity rv32im_pipeline_core is
     clk   : in  std_logic;
     reset : in  std_logic;
 
-    -- Interface com a ROM
+    -- Interface com a ROM (porta A: busca de instrucao)
     rom_addr : out std_logic_vector(31 downto 0);
     rom_rden : out std_logic;
     rom_data : in  std_logic_vector(31 downto 0);
+
+    -- Interface com a ROM (porta B: leitura de dado pelo estagio MEM --
+    -- Harvard modificado, ver is_rom_data/is_rom_data_wb abaixo)
+    rom_addr2 : out std_logic_vector(31 downto 0);
+    rom_rden2 : out std_logic;
+    rom_data2 : in  std_logic_vector(31 downto 0);
 
     -- Interface com a RAM
     ram_addr    : out std_logic_vector(31 downto 0);
@@ -234,6 +240,15 @@ architecture rtl of rv32im_pipeline_core is
   signal memwb_weReg           : std_logic;
   signal memwb_opExRAM         : opexram_t;
   signal memwb_selMuxALUPc4RAM : wbsel_t;
+
+  -- =========================================================================
+  -- Harvard modificado: decodificacao ROM/RAM por endereco (bit 16 --
+  -- ROM ocupa 0x00000000-0x0000FFFF, RAM 0x00010000-0x0001FFFF, ver
+  -- link.ld/config.yaml memory.ram_base). '1' = endereco cai na ROM.
+  -- =========================================================================
+  signal is_rom_data    : std_logic;  -- decodificado no estagio MEM (exmem_alu_out)
+  signal is_rom_data_wb : std_logic;  -- mesmo decode, 1 ciclo depois, para o mux de WB
+  signal mem_read_data  : std_logic_vector(31 downto 0);  -- RAM ou ROM (porta B), o que o WB consome
 
   -- =========================================================================
   -- Estagio WB: saida do ExtenderRAM (dado de load extendido)
@@ -622,19 +637,33 @@ begin
     );
 
   -- =========================================================================
-  -- MEM stage: interface com a RAM
+  -- MEM stage: interface com a RAM e com a porta B da ROM (Harvard
+  -- modificado)
   --
-  -- A RAM_simulation tem leitura SINCRONA: quando reRAM='1' no ciclo N, o
-  -- dado aparece em ram_rdata no ciclo N+1. No ciclo N+1 a instrucao ja
-  -- estara em WB, e o ExtenderRAM (posicionado em WB) processara ram_rdata.
+  -- Endereco decide o destino: is_rom_data='1' manda a leitura para a
+  -- porta B da ROM (rom_addr2/rom_rden2) em vez da RAM. Escrita nunca
+  -- alcanca a ROM -- fisicamente nao existe wren na porta B (ver
+  -- rom2port.vhd) -- entao ram_wren so e' relevante quando o endereco
+  -- e' mesmo de RAM; gate-alo por "not is_rom_data" so' evita gastar
+  -- um ciclo de RAM (en/rden) num endereco que nao e' dela.
+  --
+  -- A RAM_simulation/RAM1PORT e a ROM (ambas as portas) tem leitura
+  -- SINCRONA: quando *_rden='1' no ciclo N, o dado aparece na saida no
+  -- ciclo N+1. No ciclo N+1 a instrucao ja estara em WB, e o
+  -- ExtenderRAM (posicionado em WB) processara mem_read_data.
   --
   -- Endereco e dado de escrita vem diretamente do reg_EX_MEM.
   -- =========================================================================
+  is_rom_data <= not exmem_alu_out(16);
+
+  rom_addr2 <= exmem_alu_out;
+  rom_rden2 <= exmem_reRAM and exmem_valid and is_rom_data;
+
   ram_addr    <= exmem_alu_out;
   ram_wdata   <= exmem_store_data;
-  ram_en      <= exmem_eRAM  and exmem_valid;
-  ram_wren    <= exmem_weRAM and exmem_valid;
-  ram_rden    <= exmem_reRAM and exmem_valid;
+  ram_en      <= exmem_eRAM  and exmem_valid and (not is_rom_data);
+  ram_wren    <= exmem_weRAM and exmem_valid and (not is_rom_data);
+  ram_rden    <= exmem_reRAM and exmem_valid and (not is_rom_data);
   ram_byteena <= exmem_byteena;
 
   -- =========================================================================
@@ -667,13 +696,21 @@ begin
     );
 
   -- =========================================================================
-  -- WB stage: ExtenderRAM
-  -- Extende o dado lido da RAM de acordo com o tipo do load (LB/LH/LW/LBU/LHU)
+  -- WB stage: mux ROM(porta B)/RAM + ExtenderRAM
+  --
+  -- memwb_alu_out e' o mesmo endereco que gerou o acesso em MEM, um
+  -- ciclo atras -- reusa-lo aqui poupa registrar is_rom_data a parte,
+  -- ja que o proprio reg_MEM_WB ja carrega alu_out adiante.
+  --
+  -- Extende o dado lido de acordo com o tipo do load (LB/LH/LW/LBU/LHU)
   -- e o byte offset (alu_out[1:0]).
   -- =========================================================================
+  is_rom_data_wb <= not memwb_alu_out(16);
+  mem_read_data  <= rom_data2 when is_rom_data_wb = '1' else ram_rdata;
+
   u_extender_ram : entity work.ExtenderRAM
     port map (
-      signalIn  => ram_rdata,
+      signalIn  => mem_read_data,
       opExRAM   => std_logic_vector(memwb_opExRAM),
       EA        => memwb_alu_out(1 downto 0),
       signalOut => wb_ram_extended

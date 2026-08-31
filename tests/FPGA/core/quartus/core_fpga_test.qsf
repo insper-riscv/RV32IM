@@ -44,11 +44,6 @@ set_global_assignment -name PROJECT_CREATION_TIME_DATE "15:37:02  DECEMBER 04, 2
 set_global_assignment -name LAST_QUARTUS_VERSION "25.1std.0 Lite Edition"
 set_global_assignment -name PROJECT_OUTPUT_DIRECTORY output_files
 set_global_assignment -name SDC_FILE core_fpga_test.sdc
-# Was silently running "Auto Fit" (reduced Fitter effort, faster
-# compile / worse timing) — forcing standard effort costs compile
-# time but may recover the ~2ns of negative setup slack seen at the
-# Slow 1100mV 85C corner without touching any RTL.
-set_global_assignment -name FITTER_EFFORT "STANDARD FIT"
 set_global_assignment -name MIN_CORE_JUNCTION_TEMP 0
 set_global_assignment -name MAX_CORE_JUNCTION_TEMP 85
 set_global_assignment -name ERROR_CHECK_FREQUENCY_DIVISOR 256
@@ -93,6 +88,7 @@ set_global_assignment -name VHDL_FILE ../../../../src/ExtenderImm.vhd
 set_global_assignment -name VHDL_FILE ../../../../src/Blinky.vhd
 set_global_assignment -name QIP_FILE ips/ROM1PORT/rom1port.qip
 set_global_assignment -name QIP_FILE ips/RAM1PORT/ram1port.qip
+set_global_assignment -name QIP_FILE ips/ROM1PORT_MEM/rom1port_mem.qip
 set_global_assignment -name VHDL_FILE core_fpga_test.vhd
 
 #============================================================

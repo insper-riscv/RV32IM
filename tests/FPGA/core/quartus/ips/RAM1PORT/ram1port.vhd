@@ -43,7 +43,7 @@ USE altera_mf.altera_mf_components.all;
 ENTITY ram1port IS
 	PORT
 	(
-		address		: IN STD_LOGIC_VECTOR (11 DOWNTO 0);
+		address		: IN STD_LOGIC_VECTOR (13 DOWNTO 0);
 		byteena		: IN STD_LOGIC_VECTOR (3 DOWNTO 0) :=  (OTHERS => '1');
 		clock		: IN STD_LOGIC  := '1';
 		data		: IN STD_LOGIC_VECTOR (31 DOWNTO 0);
@@ -69,13 +69,13 @@ BEGIN
 		intended_device_family => "Cyclone V",
 		lpm_hint => "ENABLE_RUNTIME_MOD=YES,INSTANCE_NAME=RAM",
 		lpm_type => "altsyncram",
-		numwords_a => 4096,
+		numwords_a => 16384,
 		operation_mode => "SINGLE_PORT",
 		outdata_aclr_a => "NONE",
 		outdata_reg_a => "UNREGISTERED",
 		power_up_uninitialized => "FALSE",
 		read_during_write_mode_port_a => "NEW_DATA_NO_NBE_READ",
-		widthad_a => 12,
+		widthad_a => 14,
 		width_a => 32,
 		width_byteena_a => 4
 	)
