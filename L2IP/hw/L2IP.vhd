@@ -103,6 +103,15 @@ begin
       rom_rden => rom_rden,
       rom_data => rom_data,
 
+      -- Harvard modificado: este top nao instancia a segunda porta da
+      -- ROM (ainda usa rom1port, somente leitura pelo IF) -- leitura
+      -- de dado num endereco de ROM aqui continua voltando 0, mesmo
+      -- comportamento de antes desta mudanca, so' nao quebra a
+      -- compilacao.
+      rom_addr2 => open,
+      rom_rden2 => open,
+      rom_data2 => (others => '0'),
+
       ----------------------------------------------------------------------
       -- Interface com a RAM (leitura e escrita)
       ----------------------------------------------------------------------

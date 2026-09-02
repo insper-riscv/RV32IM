@@ -31,6 +31,11 @@ architecture behaviour of rv32i3stage_core_sim_test is
 	signal rom_rden : std_logic;
 	signal rom_data : std_logic_vector(31 downto 0);
 
+	-- Harvard modificado: porta B da ROM, leitura pelo estagio MEM
+	signal rom_addr2 : std_logic_vector(31 downto 0);
+	signal rom_rden2 : std_logic;
+	signal rom_data2 : std_logic_vector(31 downto 0);
+
 	signal ram_addr : std_logic_vector(31 downto 0);
 	signal ram_wdata : std_logic_vector(31 downto 0);
 	signal ram_rdata : std_logic_vector(31 downto 0);
@@ -73,6 +78,10 @@ begin
 			rom_rden => rom_rden,	-- enable de leitura
 			rom_data => rom_data,	-- dados lidos da ROM
 
+			rom_addr2 => rom_addr2,	-- Harvard modificado: leitura de dado (estagio MEM)
+			rom_rden2 => rom_rden2,
+			rom_data2 => rom_data2,
+
 			----------------------------------------------------------------------
 			-- Interface com a RAM (leitura e escrita)
 			----------------------------------------------------------------------
@@ -91,7 +100,12 @@ begin
 			addr 	=> rom_addr(31 downto 2),--word addressable
 			clk 	=> pll_clk_if,
 			re 		=> rom_rden,
-			data	=> rom_data
+			data	=> rom_data,
+
+			addr2 	=> rom_addr2(31 downto 2),
+			clk2 	=> pll_clk_idexmem,
+			re2 	=> rom_rden2,
+			data2	=> rom_data2
 	);
 
 	RAM : entity work.RAM_simulation

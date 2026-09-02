@@ -44,11 +44,6 @@ set_global_assignment -name PROJECT_CREATION_TIME_DATE "15:37:02  DECEMBER 04, 2
 set_global_assignment -name LAST_QUARTUS_VERSION "25.1std.0 Lite Edition"
 set_global_assignment -name PROJECT_OUTPUT_DIRECTORY output_files
 set_global_assignment -name SDC_FILE core_fpga_test.sdc
-# Was silently running "Auto Fit" (reduced Fitter effort, faster
-# compile / worse timing) — forcing standard effort costs compile
-# time but may recover the ~2ns of negative setup slack seen at the
-# Slow 1100mV 85C corner without touching any RTL.
-set_global_assignment -name FITTER_EFFORT "STANDARD FIT"
 set_global_assignment -name MIN_CORE_JUNCTION_TEMP 0
 set_global_assignment -name MAX_CORE_JUNCTION_TEMP 85
 set_global_assignment -name ERROR_CHECK_FREQUENCY_DIVISOR 256
@@ -93,6 +88,7 @@ set_global_assignment -name VHDL_FILE ../../../../src/ExtenderImm.vhd
 set_global_assignment -name VHDL_FILE ../../../../src/Blinky.vhd
 set_global_assignment -name QIP_FILE ips/ROM1PORT/rom1port.qip
 set_global_assignment -name QIP_FILE ips/RAM1PORT/ram1port.qip
+set_global_assignment -name QIP_FILE ips/ROM1PORT_MEM/rom1port_mem.qip
 set_global_assignment -name VHDL_FILE core_fpga_test.vhd
 
 #============================================================
@@ -331,6 +327,31 @@ set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SW[9]
 #set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_VS
 
 #set_instance_assignment -name CURRENT_STRENGTH_NEW "MINIMUM CURRENT" -to VGA_*
+
+#============================================================
+# SPI_FLASH (reservado, GPIO_0 header/JP1 — chip de flash SPI
+# externo pro path de firmware update; ver conversa/arquitetura
+# de boot ROM + flash. Comentado até o periférico SPI existir
+# em VHDL e expor esses sinais no top-level (mesmo padrão da
+# seção VGA acima) — descomentar quando SPI_FLASH_CS/SCK/MOSI/
+# MISO forem portas reais de core_fpga_test.vhd.
+#
+# GPIO_0_D2 (pino físico 3)  = PIN_M16 -> SPI_FLASH_CS
+# GPIO_0_D3 (pino físico 4)  = PIN_C16 -> SPI_FLASH_SCK
+# GPIO_0_D4 (pino físico 5)  = PIN_D17 -> SPI_FLASH_MOSI
+# GPIO_0_D6 (pino físico 7)  = PIN_K21 -> SPI_FLASH_MISO
+# Alimentação: pino físico 29 = VCC3P3, pino físico 30 = GND
+# (não usar o pino 11/VCC5 a menos que a flash tenha regulador
+# próprio de 5V->3.3V).
+#============================================================
+#set_location_assignment PIN_M16 -to SPI_FLASH_CS
+#set_location_assignment PIN_C16 -to SPI_FLASH_SCK
+#set_location_assignment PIN_D17 -to SPI_FLASH_MOSI
+#set_location_assignment PIN_K21 -to SPI_FLASH_MISO
+#set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SPI_FLASH_CS
+#set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SPI_FLASH_SCK
+#set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SPI_FLASH_MOSI
+#set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SPI_FLASH_MISO
 
 #====================================================================
 # Fim da configuração dos pinos utilizados em Design de Computadores.
