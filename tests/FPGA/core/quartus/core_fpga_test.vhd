@@ -27,7 +27,6 @@ architecture behaviour of core_fpga_test is
 
 	signal pll_clk_if     : std_logic;
 	signal pll_clk_idexmem: std_logic;
-	signal pll_clk_wb     : std_logic;
 	signal pll_locked     : std_logic;
 
 	-- Mantém core em reset até o PLL estar travado, ou enquanto o
@@ -44,7 +43,7 @@ begin
       rst      => '0',
       outclk_0 => pll_clk_if,
       outclk_1 => pll_clk_idexmem,
-      outclk_2 => pll_clk_wb,
+      outclk_2 => open,
       locked   => pll_locked
     );
 

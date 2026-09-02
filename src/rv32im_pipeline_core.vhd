@@ -158,7 +158,6 @@ architecture rtl of rv32im_pipeline_core is
   signal ex_valid           : std_logic;
   signal ex_pc              : word_t;
   signal ex_pc4             : word_t;
-  signal ex_instr           : word_t;
   signal ex_rs1_idx         : reg_t;
   signal ex_rs2_idx         : reg_t;
   signal ex_rd_idx          : reg_t;
@@ -222,7 +221,6 @@ architecture rtl of rv32im_pipeline_core is
   signal exmem_eRAM            : std_logic;
   signal exmem_opExRAM         : opexram_t;
   signal exmem_selMuxALUPc4RAM : wbsel_t;
-  signal exmem_funct3          : std_logic_vector(2 downto 0);
 
   -- =========================================================================
   -- Saidas do reg_MEM_WB (entradas do estagio WB)
@@ -431,7 +429,6 @@ begin
       in_valid   => idex_in_valid,
       in_pc      => ifid_pc,
       in_pc4     => ifid_pc4,
-      in_instr   => ifid_instr,
       in_rs1_idx => id_rs1_idx,
       in_rs2_idx => id_rs2_idx,
       in_rd_idx  => id_rd_idx,
@@ -457,7 +454,6 @@ begin
       idex_valid           => ex_valid,
       idex_pc              => ex_pc,
       idex_pc4             => ex_pc4,
-      idex_instr           => ex_instr,
       idex_rs1_idx         => ex_rs1_idx,
       idex_rs2_idx         => ex_rs2_idx,
       idex_rd_idx          => ex_rd_idx,
@@ -604,7 +600,6 @@ begin
       in_eRAM            => ex_eRAM,
       in_opExRAM         => ex_opExRAM,
       in_selMuxALUPc4RAM => ex_selMuxALUPc4RAM,
-      in_funct3          => ex_funct3,
 
       exmem_valid           => exmem_valid,
       exmem_pc4             => exmem_pc4,
@@ -617,8 +612,7 @@ begin
       exmem_reRAM           => exmem_reRAM,
       exmem_eRAM            => exmem_eRAM,
       exmem_opExRAM         => exmem_opExRAM,
-      exmem_selMuxALUPc4RAM => exmem_selMuxALUPc4RAM,
-      exmem_funct3          => exmem_funct3
+      exmem_selMuxALUPc4RAM => exmem_selMuxALUPc4RAM
     );
 
   -- =========================================================================

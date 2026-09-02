@@ -81,17 +81,6 @@ architecture behaviour of control_unit is
   signal funct3_i : std_logic_vector(2 downto 0);
   signal funct7_i : std_logic_vector(6 downto 0);
 
-  -- Sinais de pre-decode por tipo (igual ao InstructionDecoder original)
-  signal is_r_type  : std_logic;
-  signal is_i_type  : std_logic;
-  signal is_load    : std_logic;
-  signal is_store   : std_logic;
-  signal is_branch  : std_logic;
-  signal is_jal     : std_logic;
-  signal is_jalr    : std_logic;
-  signal is_lui     : std_logic;
-  signal is_auipc   : std_logic;
-
 begin
 
   -- -------------------------------------------------------------------------
@@ -106,41 +95,10 @@ begin
   funct3_out <= funct3_i;
 
   -- -------------------------------------------------------------------------
-  -- Pre-decode por opcode (igual ao InstructionDecoder original)
-  -- -------------------------------------------------------------------------
-  process(opcode_i)
-  begin
-    is_r_type  <= '0';
-    is_i_type  <= '0';
-    is_load    <= '0';
-    is_store   <= '0';
-    is_branch  <= '0';
-    is_jal     <= '0';
-    is_jalr    <= '0';
-    is_lui     <= '0';
-    is_auipc   <= '0';
-
-    case opcode_i is
-      when "0110011" => is_r_type <= '1';
-      when "0010011" => is_i_type <= '1';
-      when "0000011" => is_load   <= '1';
-      when "0100011" => is_store  <= '1';
-      when "1100011" => is_branch <= '1';
-      when "1101111" => is_jal    <= '1';
-      when "1100111" => is_jalr   <= '1';
-      when "0110111" => is_lui    <= '1';
-      when "0010111" => is_auipc  <= '1';
-      when others    => null;
-    end case;
-  end process;
-
-  -- -------------------------------------------------------------------------
   -- Decodificador principal
   -- Logica identica ao InstructionDecoder.vhd original.
   -- -------------------------------------------------------------------------
-  process(opcode_i, funct3_i, funct7_i,
-          is_r_type, is_i_type, is_load, is_store,
-          is_branch, is_jal, is_jalr, is_lui, is_auipc)
+  process(opcode_i, funct3_i, funct7_i)
   begin
     -- Defaults (mesmos do InstructionDecoder)
     selMuxPc4ALU    <= '0';

@@ -44,7 +44,6 @@ architecture arch_name of multdiv is
 
   signal palavra   : std_logic_vector(4 downto 0);
   signal signedAB  : std_logic_vector(1 downto 0);
-  signal operacao  : std_logic_vector(1 downto 0);
   signal maisMenos : std_logic;
 
   signal outA : std_logic_vector(32 downto 0);
@@ -99,8 +98,8 @@ begin
   start_divu <= start and not_isMult and isUnsigned;
 
   -- Decodifica opCode TRAVADO (para done_int e saida_capt - estavel durante calculo)
-  -- CORRETO: usa o decoderM para mapear op_latched -> operacao
-  -- (op_latched(1:0) NAO bate com operacao do decoderM para DIVU/REM/REMU)
+  -- O seletor deve ser derivado dos tres bits de op_latched, pois apenas
+  -- op_latched(1:0) nao distingue corretamente DIVU/REM/REMU.
   isMult_lat     <= '1' when op_latched(2) = '0' else '0';
   isUnsigned_lat <= '1' when (op_latched = "101" or op_latched = "111") else '0';
   -- operacao do decoderM:
@@ -190,7 +189,6 @@ begin
         );
 
   signedAB  <= palavra(4 downto 3);
-  operacao  <= palavra(2 downto 1);
   maisMenos <= palavra(0);
 
   -- Correcao MULHU/MULHSU

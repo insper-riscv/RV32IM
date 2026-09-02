@@ -17,7 +17,6 @@
 --   weRAM / reRAM / eRAM : controles de acesso a RAM
 --   opExRAM           : tipo de extensao para leituras de RAM (ExtenderRAM)
 --   selMuxALUPc4RAM   : selecao do mux de WB (ALU / PC4 / RAM)
---   funct3            : campo funct3 original (necessario para ExtenderRAM)
 --
 -- Controle de en e flush:
 --   en    : '0' congela o registrador (load-use no futuro ou muldiv_busy).
@@ -60,7 +59,6 @@ entity reg_EX_MEM is
     in_eRAM            : in  std_logic;
     in_opExRAM         : in  opexram_t;
     in_selMuxALUPc4RAM : in  wbsel_t;
-    in_funct3          : in  std_logic_vector(2 downto 0);
 
     -- =========================================================================
     -- Saidas para o estagio MEM (consumidas por M3)
@@ -80,8 +78,7 @@ entity reg_EX_MEM is
     exmem_reRAM           : out std_logic;
     exmem_eRAM            : out std_logic;
     exmem_opExRAM         : out opexram_t;
-    exmem_selMuxALUPc4RAM : out wbsel_t;
-    exmem_funct3          : out std_logic_vector(2 downto 0)
+    exmem_selMuxALUPc4RAM : out wbsel_t
   );
 end entity reg_EX_MEM;
 
@@ -100,7 +97,6 @@ architecture rtl of reg_EX_MEM is
   signal r_eRAM            : std_logic := '0';
   signal r_opExRAM         : opexram_t := (others => '0');
   signal r_selMuxALUPc4RAM : wbsel_t   := (others => '0');
-  signal r_funct3          : std_logic_vector(2 downto 0) := (others => '0');
 begin
 
   process(clk)
@@ -122,7 +118,6 @@ begin
         r_eRAM            <= '0';
         r_opExRAM         <= (others => '0');
         r_selMuxALUPc4RAM <= (others => '0');
-        r_funct3          <= (others => '0');
 
       elsif flush = '1' then
         -- Flush zera o pacote e todos os sinais com efeito colateral.
@@ -141,7 +136,6 @@ begin
         r_eRAM            <= '0';
         r_opExRAM         <= (others => '0');
         r_selMuxALUPc4RAM <= (others => '0');
-        r_funct3          <= (others => '0');
 
       elsif en = '1' then
         r_valid <= in_valid;
@@ -158,7 +152,6 @@ begin
         r_eRAM            <= in_eRAM;
         r_opExRAM         <= in_opExRAM;
         r_selMuxALUPc4RAM <= in_selMuxALUPc4RAM;
-        r_funct3          <= in_funct3;
       end if;
       -- en = '0': hold (stall por muldiv_busy)
 
@@ -180,6 +173,5 @@ begin
   exmem_eRAM            <= r_eRAM;
   exmem_opExRAM         <= r_opExRAM;
   exmem_selMuxALUPc4RAM <= r_selMuxALUPc4RAM;
-  exmem_funct3          <= r_funct3;
 
 end architecture rtl;

@@ -15,7 +15,6 @@ entity reg_ID_EX is
     -- Dados do estagio ID
     in_pc      : in  word_t;
     in_pc4     : in  word_t;
-    in_instr   : in  word_t;
     in_rs1_idx : in  reg_t;
     in_rs2_idx : in  reg_t;
     in_rd_idx  : in  reg_t;
@@ -44,7 +43,6 @@ entity reg_ID_EX is
 
     idex_pc      : out word_t;
     idex_pc4     : out word_t;
-    idex_instr   : out word_t;
     idex_rs1_idx : out reg_t;
     idex_rs2_idx : out reg_t;
     idex_rd_idx  : out reg_t;
@@ -74,7 +72,6 @@ architecture rtl of reg_ID_EX is
 
   signal r_pc      : word_t := (others => '0');
   signal r_pc4     : word_t := (others => '0');
-  signal r_instr   : word_t := (others => '0');
   signal r_rs1_idx : reg_t  := (others => '0');
   signal r_rs2_idx : reg_t  := (others => '0');
   signal r_rd_idx  : reg_t  := (others => '0');
@@ -106,7 +103,6 @@ begin
 
         r_pc      <= (others => '0');
         r_pc4     <= (others => '0');
-        r_instr   <= (others => '0');
         r_rs1_idx <= (others => '0');
         r_rs2_idx <= (others => '0');
         r_rd_idx  <= (others => '0');
@@ -135,7 +131,6 @@ begin
 
         r_pc      <= (others => '0');
         r_pc4     <= (others => '0');
-        r_instr   <= (others => '0');
         r_rs1_idx <= (others => '0');
         r_rs2_idx <= (others => '0');
         r_rd_idx  <= (others => '0');
@@ -163,7 +158,6 @@ begin
 
         r_pc      <= in_pc;
         r_pc4     <= in_pc4;
-        r_instr   <= in_instr;
         r_rs1_idx <= in_rs1_idx;
         r_rs2_idx <= in_rs2_idx;
         r_rd_idx  <= in_rd_idx;
@@ -194,7 +188,6 @@ begin
 
   idex_pc      <= r_pc;
   idex_pc4     <= r_pc4;
-  idex_instr   <= r_instr;
   idex_rs1_idx <= r_rs1_idx;
   idex_rs2_idx <= r_rs2_idx;
   idex_rd_idx  <= r_rd_idx;
