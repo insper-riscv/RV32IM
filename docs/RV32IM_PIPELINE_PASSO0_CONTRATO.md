@@ -300,3 +300,7 @@ Controle ID -> EX:
 - M1 entrega `ifid_*` e `idex_*` completos (especialmente secao 4).
 - M2 assume contrato fixo de `idex_*` e implementa EX/MEM/WB sem ler decoder direto.
 - Integracao fecha no `rv32im_pipeline5_top` com sinais sideband de branch (`ex_branch_taken`, `ex_branch_target`).
+
+---
+
+Copyright 2026 Insper. Licenciado sob a [Apache License, Version 2.0](../LICENSE).

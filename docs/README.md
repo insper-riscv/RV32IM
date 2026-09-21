@@ -410,3 +410,7 @@ A implementação das instruções em hardware foi conduzida de forma incrementa
    - `opExRAM[3:0]` : Seleciona qual tipo de operação a Unidade Extensora da RAM deve realizar.
    - `mask[4:0]` : Mascara de para os bytes de escrita na RAM.
    - `weRAM` : Habilita escrita na RAM.
+
+---
+
+Copyright 2026 Insper. Licenciado sob a [Apache License, Version 2.0](../LICENSE).

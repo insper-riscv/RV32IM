@@ -27,3 +27,7 @@ python3 scripts/compare_kpis.py \
 docs/baseline_2025_2.json  ← NÃO EDITAR — snapshot do grupo anterior
 docs/current_2026_1.json   ← gerado pelo kpi_report.py
 ```
+
+---
+
+Copyright 2026 Insper. Licenciado sob a [Apache License, Version 2.0](../LICENSE).

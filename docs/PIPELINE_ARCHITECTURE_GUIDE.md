@@ -404,3 +404,6 @@ Calcula valor do imediato conforme tipo
 - ✅ ExtenderRAM em WB recebendo `ram_rdata` e `memwb_opExRAM`?
 - ✅ Mux final de WB selecionando corretamente via `memwb_selMuxALUPc4RAM`?
 
+---
+
+Copyright 2026 Insper. Licenciado sob a [Apache License, Version 2.0](../LICENSE).

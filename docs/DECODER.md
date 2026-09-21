@@ -36,3 +36,7 @@
 | SH        | M[x[rs1]+off] = x[rs2][15:0] | 0100011 | 001 | - |0|S|XX|0|XXX|1|1|PASS_B|0011|1|
 | SB        | M[x[rs1]+off] = x[rs2][7:0] | 0100011 | 000 | -  |0|S|XX|0|XXX|1|1|PASS_B|0001|1|
 | NOP       | - | 0000000 | XXX | XXXXXXX | X |XXX|XX|0|XXX|X|X|X|XXXX|0|
+
+---
+
+Copyright 2026 Insper. Licenciado sob a [Apache License, Version 2.0](../LICENSE).

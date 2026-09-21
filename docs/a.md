@@ -63,3 +63,7 @@
 * Desvia para label `loop` (linha 40)
 * **ULA saída:** PC+4 (mas como dest é x0, resultado é descartado)
 * **Efeito:** processador entra num **loop infinito** incrementando `a1`.
+
+---
+
+Copyright 2026 Insper. Licenciado sob a [Apache License, Version 2.0](../LICENSE).

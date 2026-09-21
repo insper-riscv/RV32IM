@@ -40,5 +40,6 @@ Top-level: `testeBancoReg`
 * `LEDR[2]` ← `not(FPGA_RESET_N)` (step button pressed)
 * `LEDR[3]` ← `CLOCK_50` (board clock — just a visual reference)
 
+---
 
-
+Copyright 2026 Insper. Licensed under the [Apache License, Version 2.0](../../../../LICENSE).
